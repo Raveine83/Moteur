@@ -1,8 +1,7 @@
 target/
 *.class
-*.zip
+release/
 .idea/
 *.iml
 .vscode/
 .DS_Store
-dist/

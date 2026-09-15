@@ -1,58 +1,72 @@
 name: CI
 
+# Runs on every branch, on every push.
+# The "package-and-release" job only runs on master/dev (see its own "if").
 on:
   push:
     branches: [ '**' ]
   workflow_dispatch:
 
 jobs:
+  # -----------------------------------------------------------------------
+  # Runs on EVERY branch: compiles the project and runs the unit tests.
+  # Fast feedback loop for any push, no deliverable produced here.
+  # -----------------------------------------------------------------------
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout du code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build
+      - name: Compile
         run: mvn -B compile
 
-      - name: Tests (avec écran virtuel pour Processing)
+      # Processing tries to initialize a graphics context even for some
+      # non-rendering operations, so a virtual display (Xvfb) is required
+      # to run tests in a headless CI environment.
+      - name: Run unit tests (with virtual display for Processing)
         run: xvfb-run --auto-servernum mvn -B test
 
-      - name: Publier les résultats de tests
+      - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: target/surefire-reports/
 
+  # -----------------------------------------------------------------------
+  # Runs ONLY on master/dev: builds the downloadable deliverable, following
+  # the exact folder structure required by the assignment:
+  #   <Team_Name>/Application, Sources, Docs, Files
+  # -----------------------------------------------------------------------
   package-and-release:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
 
     steps:
-      - name: Checkout du code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Package (jar exécutable)
+      - name: Build the runnable jar
         run: mvn -B package -DskipTests
 
-      - name: Construire l'arborescence de livraison
+      - name: Assemble the deliverable folder structure
         run: |
           TEAM="Groupe 2 - Sonic"
           ROOT="release/$TEAM"
@@ -62,22 +76,26 @@ jobs:
           mkdir -p "$ROOT/Docs"
           mkdir -p "$ROOT/Files"
 
-          # Application exportée : le jar + les assets
+          # Application: the exported runnable jar + Processing assets
           cp target/*.jar "$ROOT/Application/"
           cp -r data "$ROOT/Application/" 2>/dev/null || true
 
-          # Sources : sketch Processing complet
+          # Sources: the full Processing sketch (engine + game)
           cp -r src "$ROOT/Sources/"
           cp pom.xml "$ROOT/Sources/"
 
-          # Docs et Files : ce qui est déjà dans le dépôt (vide pour l'instant)
+          # Docs / Files: whatever the team has already committed
+          # (slides PDF, demo video). Empty for now.
           cp -r Docs/. "$ROOT/Docs/" 2>/dev/null || true
           cp -r Files/. "$ROOT/Files/" 2>/dev/null || true
 
-          # Nettoyage des .gitkeep pour ne pas les livrer
+          # Remove .gitkeep placeholders so they don't ship in the deliverable
           find "$ROOT" -name ".gitkeep" -delete
 
-      - name: Publier le livrable
+      # Note: GitHub Actions zips the uploaded path automatically on download.
+      # We upload the folder itself (not a pre-made .zip) to avoid a
+      # "zip inside a zip" when the team downloads the artifact.
+      - name: Upload downloadable deliverable
         uses: actions/upload-artifact@v4
         with:
           name: Groupe 2 - Sonic

@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.exemple</groupId>
-    <artifactId>mon-projet</artifactId>
+    <groupId>com.team</groupId>
+    <artifactId>game-engine</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -15,21 +15,30 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!--
+        JogAmp hosts the OpenGL bindings (JOGL / GlueGen) that Processing's core
+        depends on for the P3D / P2D renderers. These artifacts are NOT published
+        to Maven Central, so we need this extra repository to resolve them.
+        Without it, any build using the P3D renderer will fail with
+        "Could not find artifact org.jogamp.jogl:jogl-all" / "gluegen-rt".
+    -->
+    <repositories>
+        <repository>
+            <id>jogamp</id>
+            <url>https://jogamp.org/deployment/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <!--
+            Processing core (PApplet, PGraphics, ...).
+            Transitively pulls JOGL/GlueGen for 3D rendering (P3D) - resolved
+            thanks to the jogamp repository declared above.
+        -->
         <dependency>
             <groupId>org.processing</groupId>
             <artifactId>core</artifactId>
             <version>4.5.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jogamp.gluegen</groupId>
-                    <artifactId>gluegen-rt</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jogamp.jogl</groupId>
-                    <artifactId>jogl-all</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -48,7 +57,7 @@
                 <version>3.2.5</version>
             </plugin>
 
-            <!-- Crée un jar exécutable avec toutes les dépendances incluses -->
+            <!-- Bundles all dependencies into a single runnable jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -62,7 +71,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.exemple.Main</mainClass>
+                                    <mainClass>com.team.game.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
