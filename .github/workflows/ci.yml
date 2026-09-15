@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -52,17 +52,34 @@ jobs:
       - name: Package (jar exécutable)
         run: mvn -B package -DskipTests
 
-      - name: Créer le zip de déploiement
+      - name: Construire l'arborescence de livraison
         run: |
-          mkdir -p dist
-          cp target/*.jar dist/
-          cp -r data dist/ 2>/dev/null || true
-          BRANCH=${GITHUB_REF##*/}
-          zip -r mon-projet-${BRANCH}.zip dist/
+          TEAM="Groupe 2 - Sonic"
+          ROOT="release/$TEAM"
 
-      - name: Publier le zip téléchargeable
+          mkdir -p "$ROOT/Application"
+          mkdir -p "$ROOT/Sources"
+          mkdir -p "$ROOT/Docs"
+          mkdir -p "$ROOT/Files"
+
+          # Application exportée : le jar + les assets
+          cp target/*.jar "$ROOT/Application/"
+          cp -r data "$ROOT/Application/" 2>/dev/null || true
+
+          # Sources : sketch Processing complet
+          cp -r src "$ROOT/Sources/"
+          cp pom.xml "$ROOT/Sources/"
+
+          # Docs et Files : ce qui est déjà dans le dépôt (vide pour l'instant)
+          cp -r Docs/. "$ROOT/Docs/" 2>/dev/null || true
+          cp -r Files/. "$ROOT/Files/" 2>/dev/null || true
+
+          # Nettoyage des .gitkeep pour ne pas les livrer
+          find "$ROOT" -name ".gitkeep" -delete
+
+      - name: Publier le livrable
         uses: actions/upload-artifact@v4
         with:
-          name: mon-projet-${{ github.ref_name }}
-          path: mon-projet-*.zip
+          name: Groupe 2 - Sonic
+          path: release/Groupe 2 - Sonic
           retention-days: 90
