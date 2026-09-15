@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ '**' ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build
+        run: mvn -B compile
+
+      - name: Tests (avec écran virtuel pour Processing)
+        run: xvfb-run --auto-servernum mvn -B test
+
+      - name: Publier les résultats de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+  package-and-release:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Package (jar exécutable)
+        run: mvn -B package -DskipTests
+
+      - name: Créer le zip de déploiement
+        run: |
+          mkdir -p dist
+          cp target/*.jar dist/
+          cp -r data dist/ 2>/dev/null || true
+          BRANCH=${GITHUB_REF##*/}
+          zip -r mon-projet-${BRANCH}.zip dist/
+
+      - name: Publier le zip téléchargeable
+        uses: actions/upload-artifact@v4
+        with:
+          name: mon-projet-${{ github.ref_name }}
+          path: mon-projet-*.zip
+          retention-days: 90
