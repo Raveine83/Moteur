@@ -1,13 +1,15 @@
+package com.team.game; 
+
 /**
 Classe Vecteur3D
 Représente un vecteur à 3 composantes (x, y, z)
 Fournit les opérations vectorielles courantes
 */
-class Vecteur3D {
+public class Vecteur3D {
  
-  private float x;
-  private float y;
-  private float z;
+  private double x;
+  private double y;
+  private double z;
  
  /* ---------- CONSTRUCTEURS ---------- */
  
@@ -15,25 +17,25 @@ class Vecteur3D {
    this.setVecteur(0, 0, 0);
  }
  
- public Vecteur3D(float x, float y, float z) {
+ public Vecteur3D(double x, double y, double z) {
    this.setVecteur(x, y, z);
  }
  
  /* ---------- NORMES ---------- */
  
- public float normeCarre() {
+ public double normeCarre() {
    return (x*x) + (y*y) + (z*z);
  }
  
- public float norme() {
-   return sqrt(normeCarre());
+ public double norme() {
+   return Math.sqrt(normeCarre());
  }
  
  /* ---------- NORMALISATION ---------- */
  
  // Normalise le vecteur courant
  public Vecteur3D normaliser() {
-   float n = norme();
+   double n = norme();
    if (n != 0) {
       this.x /= n;
       this.y /= n;
@@ -61,7 +63,7 @@ class Vecteur3D {
  }
  
  // Multiplication par un scalaire
- public Vecteur3D multiplierParUnScalaire(float s) {
+ public Vecteur3D multiplierParUnScalaire(double s) {
    this.x *= s;
    this.y *= s;
    this.z *= s;
@@ -85,12 +87,12 @@ class Vecteur3D {
  }
  
  // Produit scalaire
- public float produitScalaire(Vecteur3D v) {
+ public double produitScalaire(Vecteur3D v) {
    return (this.x * v.x) + (this.y * v.y) + (this.z * v.z);
  }
  
  // Division par un scalaire
- public Vecteur3D diviserParUnScalaire(float s) {
+ public Vecteur3D diviserParUnScalaire(double s) {
    if (s != 0) {
      x /= s;
      y /= s;
@@ -108,33 +110,33 @@ class Vecteur3D {
  
  /* ---------- GETTERS ---------- */
  
- public float getX() {
+ public double getX() {
    return this.x;
  }
  
- public float getY() {
+ public double getY() {
    return this.y;
  }
  
- public float getZ() {
+ public double getZ() {
    return this.z;
  }
  
  /* ---------- SETTERS ---------- */
  
- private void setX(float x) {
+ private void setX(double x) {
    this.x = x;
  }
  
- private void setY(float y) {
+ private void setY(double y) {
    this.y = y;
  }
  
- private void setZ(float z) {
+ private void setZ(double z) {
    this.z = z;
  }
  
- private void setVecteur(float x, float y, float z) {
+ private void setVecteur(double x, double y, double z) {
    this.setX(x);
    this.setY(y);
    this.setZ(z);

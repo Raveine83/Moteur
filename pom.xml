@@ -78,6 +78,36 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+
+                <executions>
+                    <execution>
+                        <id>copy-jar-to-processing</id>
+                        <phase>package</phase>
+
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.basedir}/src/sketch/Jeu/code"/>
+
+                                <copy
+                                    file="${project.build.directory}/original-${project.build.finalName}.jar"
+                                    tofile="${project.basedir}/src/sketch/Jeu/code/game-engine.jar"
+                                    overwrite="true"
+                                />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 </project>
