@@ -1,8 +1,3 @@
-/**
- * Représente un projectile en vol : encapsule une Particule du moteur
- * physique et gère la trajectoire, la sortie d'écran et les collisions.
- * Le rendu visuel est laissé aux sous-classes (Balle, Boulet, Laser, BouleDeFeu).
- */
 abstract class Projectile {
   TypeProjectile type;
   Particule particule;

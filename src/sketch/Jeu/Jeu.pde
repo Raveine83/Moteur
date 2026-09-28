@@ -1,9 +1,7 @@
 import com.team.game.Vecteur3D;
 import com.team.game.Particule;
 
-// Accélération gravitationnelle (px/s^2), réglable en jeu (flèches
-// gauche/droite). L'axe Y de Processing pointe vers le bas, donc une
-// valeur positive fait bien tomber les projectiles.
+
 double gravite;
 final double GRAVITE_MIN = 0.0;
 final double GRAVITE_MAX = 1200.0;
@@ -26,8 +24,7 @@ long dernierTemps;
 float dt;
 boolean partieGagnee;
 
-// Damping réglable en jeu (flèches haut/bas) pour observer l'effet du
-// frottement de l'air sur la trajectoire. Reste proche de 1 par défaut.
+
 double dampingActuel;
 final double DAMPING_MIN = 0.80;
 final double DAMPING_MAX = 1.0;
@@ -37,7 +34,6 @@ void setup() {
   size(900, 600);
 
   // Vitesse initiale et masse propres à chaque type de projectile,
-  // comme demandé dans les consignes.
   TYPE_BALLE     = new TypeProjectile("Balle",        1.0, 500, color(230, 200, 40), 8);
   TYPE_BOULET    = new TypeProjectile("Boulet",        8.0, 350, color(70, 70, 70),   16);
   TYPE_LASER     = new TypeProjectile("Laser",         0.05, 900, color(255, 30, 30),  4);
@@ -69,7 +65,6 @@ void genererCibles() {
 }
 
 void draw() {
-  // Durée de la frame précédente, appliquée à l'intégration de cette frame.
   long maintenant = millis();
   dt = (maintenant - dernierTemps) / 1000.0;
   dernierTemps = maintenant;
