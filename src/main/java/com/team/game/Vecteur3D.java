@@ -108,8 +108,25 @@ public class Vecteur3D {
    return this;
  }
  
+ /* ---------- OPERATIONS NON DESTRUCTIVES ---------- */
+
+ // Retourne une copie du vecteur courant
+ public Vecteur3D copie() {
+   return new Vecteur3D(x, y, z);
+ }
+
+ // Retourne this - v dans un nouveau vecteur (this n'est pas modifié)
+ public Vecteur3D moins(Vecteur3D v) {
+   return copie().soustraire(v);
+ }
+
+ // Retourne this * s dans un nouveau vecteur (this n'est pas modifié)
+ public Vecteur3D fois(double s) {
+   return copie().multiplierParUnScalaire(s);
+ }
+
  /* ---------- GETTERS ---------- */
- 
+
  public double getX() {
    return this.x;
  }
