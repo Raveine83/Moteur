@@ -27,7 +27,7 @@ public class Particule
         this.vitesse = new Vecteur3D();
         this.acceleration = new Vecteur3D();
         this.forceAccumulee = new Vecteur3D();
-        this.accelerationDerniereFrame = new Vecteur3D();
+        this.accelerationDerniereFrame = this.acceleration.copie();
 
         this.inverseMasse = 1.0;
         this.damping = 0.999;
@@ -47,7 +47,7 @@ public class Particule
         this.vitesse = vitesse;
         this.acceleration = acceleration;
         this.forceAccumulee = new Vecteur3D();
-        this.accelerationDerniereFrame = new Vecteur3D();
+        this.accelerationDerniereFrame = this.acceleration.copie();
 
         setMasse(masse);
         this.damping = damping;
@@ -61,6 +61,13 @@ public class Particule
     public void ajouterForce(Vecteur3D force)
     {
         forceAccumulee.additionner(force);
+    }
+
+    /** Impulsion externe instantanée : delta(v) = J / m (chapitre 6). */
+    public void appliquerImpulsion(Vecteur3D impulsion)
+    {
+        java.util.Objects.requireNonNull(impulsion);
+        if (inverseMasse > 0) { vitesse.additionner(impulsion.fois(inverseMasse)); }
     }
 
     /**

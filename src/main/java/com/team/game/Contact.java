@@ -98,11 +98,11 @@ public class Contact
 
         // Vitesse de séparation due uniquement à l'accélération de la frame.
         Vecteur3D accelerationRelative =
-            particule1.getAcceleration().copie();
+            particule1.getAccelerationDerniereFrame().copie();
 
         if (particule2 != null)
         {
-            accelerationRelative.soustraire(particule2.getAcceleration());
+            accelerationRelative.soustraire(particule2.getAccelerationDerniereFrame());
         }
 
         double separationDueAcceleration =

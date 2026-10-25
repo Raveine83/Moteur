@@ -97,9 +97,14 @@ public class FrictionSolide implements GenerateurForce
         }
 
         // Friction cinétique : opposée à la vitesse.
-        particule.ajouterForce(
-            particule.getVitesse().copie().normaliser()
-                .fois(-muCinetique * forceNormale)
-        );
+        double intensite = muCinetique * forceNormale;
+        if (dt > 0 && particule.getInverseMasse() > 0) {
+            // Ne pas inverser artificiellement la vitesse en une seule frame.
+            double forceParallele = forceAppliquee.produitScalaire(
+                particule.getVitesse().fois(1 / vitesse));
+            intensite = Math.min(intensite, Math.max(0,
+                particule.getMasse() * vitesse / dt + forceParallele));
+        }
+        particule.ajouterForce(particule.getVitesse().fois(-intensite / vitesse));
     }
 }
